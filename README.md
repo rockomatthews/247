@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OBS Live Streaming Site
+
+A Next.js application with Material-UI for 24/7 OBS streaming with live comments.
+
+## Features
+
+- **Video Streaming**: HLS-based video player with low latency support
+- **Live Comments**: Real-time commenting system using WebSocket
+- **Responsive Design**: Works on desktop and mobile devices
+- **OBS Integration**: Ready for RTMP input from OBS Studio
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
+```bash
+npm install
+```
 
+2. Configure environment variables in `.env.local`:
+```env
+NEXT_PUBLIC_STREAM_URL=your-hls-stream-url
+NEXT_PUBLIC_SOCKET_URL=your-websocket-server-url
+```
+
+3. Run the development server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## OBS Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To stream from OBS Studio:
 
-## Learn More
+1. Open OBS Studio → Settings → Stream
+2. Set Service to "Custom..."
+3. Enter your RTMP server URL
+4. Add your stream key
+5. Start streaming
 
-To learn more about Next.js, take a look at the following resources:
+## Streaming Recommendations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Based on research, the best setup for 24/7 streaming is:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Ingestion Protocol**: RTMP (most compatible with OBS)
+- **Delivery Protocol**: HLS with low-latency optimization
+- **Backup Option**: WebRTC for ultra-low latency interactive streams
 
-## Deploy on Vercel
+## Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Frontend**: Next.js 15 with Material-UI
+- **Video Player**: HLS.js for adaptive streaming
+- **Comments**: Socket.IO for real-time communication
+- **Styling**: Material-UI with dark theme
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Browser Support
+
+- Modern browsers with HLS support
+- iOS Safari (native HLS support)
+- Chrome, Firefox, Edge (via HLS.js)
+
+## Production Notes
+
+For production deployment:
+
+1. Set up an RTMP server (nginx-rtmp recommended)
+2. Configure HLS transcoding
+3. Set up a WebSocket server for comments
+4. Use a CDN for HLS delivery
+5. Configure proper CORS headers
