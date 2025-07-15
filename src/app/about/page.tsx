@@ -56,7 +56,7 @@ export default function About() {
               Open OBS Studio and go to Settings → Stream
             </Typography>
             <Typography component="li" variant="body1" sx={{ mb: 1 }}>
-              Set Service to "Custom..."
+              Set Service to &quot;Custom...&quot;
             </Typography>
             <Typography component="li" variant="body1" sx={{ mb: 1 }}>
               Enter the RTMP server URL provided by the administrator
