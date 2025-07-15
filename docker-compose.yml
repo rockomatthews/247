@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  rtmp-server:
+    image: alfg/nginx-rtmp
+    container_name: streaming-server
+    ports:
+      - "1935:1935"  # RTMP port
+      - "8080:80"    # HLS port
+    volumes:
+      - ./data/hls:/opt/data/hls
+      - ./nginx-simple.conf:/etc/nginx/nginx.conf
+    environment:
+      - RTMP_STREAM_NAMES=live
+    restart: unless-stopped
+
+  websocket-server:
+    build: .
+    container_name: websocket-server
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - FRONTEND_URL=*
+    restart: unless-stopped
+    depends_on:
+      - rtmp-server

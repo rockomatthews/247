@@ -30,16 +30,24 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log('Stream manifest loaded successfully');
         setIsLive(true);
         setShowCover(false);
         setError(null);
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
+        console.log('HLS Error:', data);
         if (data.fatal) {
-          setError('Stream unavailable');
+          setError('Stream unavailable - Check if OBS is streaming');
           setIsLive(false);
           setShowCover(true);
+          
+          // Retry loading stream after 5 seconds
+          setTimeout(() => {
+            console.log('Retrying stream connection...');
+            hls.loadSource(streamUrl);
+          }, 5000);
         }
       });
 

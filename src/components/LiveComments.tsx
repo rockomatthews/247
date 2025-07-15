@@ -31,15 +31,35 @@ export default function LiveComments() {
   const commentsEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const socketInstance = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'ws://localhost:3001');
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'ws://localhost:3001';
+    console.log('Connecting to WebSocket:', socketUrl);
+    
+    const socketInstance = io(socketUrl, {
+      transports: ['websocket', 'polling'],
+      upgrade: true
+    });
     setSocket(socketInstance);
 
+    socketInstance.on('connect', () => {
+      console.log('Connected to WebSocket server');
+    });
+
     socketInstance.on('comment', (comment: Comment) => {
+      console.log('New comment received:', comment);
       setComments(prev => [...prev, comment]);
     });
 
     socketInstance.on('initialComments', (initialComments: Comment[]) => {
+      console.log('Initial comments loaded:', initialComments.length);
       setComments(initialComments);
+    });
+
+    socketInstance.on('disconnect', () => {
+      console.log('Disconnected from WebSocket server');
+    });
+
+    socketInstance.on('connect_error', (error) => {
+      console.error('WebSocket connection error:', error);
     });
 
     return () => {
