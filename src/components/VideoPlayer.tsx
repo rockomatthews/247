@@ -19,6 +19,16 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
     const video = videoRef.current;
     if (!video) return;
 
+    // Check if it's a YouTube embed URL
+    if (streamUrl.includes('youtube.com/embed/')) {
+      // Extract video ID and show YouTube iframe instead
+      const videoId = streamUrl.split('/embed/')[1];
+      setIsLive(true);
+      setShowCover(false);
+      setError(null);
+      return;
+    }
+
     if (Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: false,
@@ -134,21 +144,38 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
           </Box>
         )}
         
-        <video
-          ref={videoRef}
-          controls
-          autoPlay
-          muted
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: '#000',
-            display: showCover ? 'none' : 'block',
-          }}
-        />
+        {streamUrl.includes('youtube.com/embed/') ? (
+          <iframe
+            src={streamUrl}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              border: 'none',
+              display: showCover ? 'none' : 'block',
+            }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            controls
+            autoPlay
+            muted
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: '#000',
+              display: showCover ? 'none' : 'block',
+            }}
+          />
+        )}
         
         {isLive && (
           <Box

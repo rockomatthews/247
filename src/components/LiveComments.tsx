@@ -31,7 +31,13 @@ export default function LiveComments() {
   const commentsEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'ws://localhost:3001';
+    // Disable WebSocket if no URL is provided
+    if (!process.env.NEXT_PUBLIC_SOCKET_URL) {
+      console.log('No WebSocket URL configured - comments disabled');
+      return;
+    }
+    
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
     console.log('Connecting to WebSocket:', socketUrl);
     
     const socketInstance = io(socketUrl, {
