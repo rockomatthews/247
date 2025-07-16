@@ -5,6 +5,7 @@ import { Box, Container } from '@mui/material';
 import Navigation from '@/components/Navigation';
 import VideoPlayer from '@/components/VideoPlayer';
 import TwitchChat from '@/components/LiveComments';
+import TippingPlatform from '@/components/TippingPlatform';
 
 export default function Home() {
   const [streamUrl, setStreamUrl] = useState('');
@@ -54,9 +55,16 @@ export default function Home() {
       />
       <Navigation />
       <Box sx={{ width: '100%' }}>
-        <VideoPlayer streamUrl={streamUrl} />
+        <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
+          <Box sx={{ flex: 1 }}>
+            <VideoPlayer streamUrl={streamUrl} />
+          </Box>
+          <Box sx={{ width: '340px' }}>
+            <TwitchChat channel={twitchChannel} />
+          </Box>
+        </Box>
         <Container maxWidth="lg" sx={{ py: 4 }}>
-          <TwitchChat channel={twitchChannel} />
+          <TippingPlatform />
         </Container>
       </Box>
     </>
