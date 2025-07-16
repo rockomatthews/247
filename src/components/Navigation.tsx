@@ -6,14 +6,24 @@ import Link from 'next/link';
 
 export default function Navigation() {
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: 'black' }}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Live Stream
+        <Typography 
+          variant="h6" 
+          component="div" 
+          sx={{ 
+            flexGrow: 1,
+            fontFamily: '"Act of Rejection", sans-serif',
+            fontSize: '1.5rem',
+            fontWeight: 'bold'
+          }}
+        >
+          <span style={{ color: '#FFD700' }}>Projector Bach</span>{' '}
+          <span style={{ color: 'white' }}>TV</span>
         </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
-            color="inherit"
+            sx={{ color: 'white' }}
             component={Link}
             href="/"
             startIcon={<LiveTv />}
@@ -21,7 +31,7 @@ export default function Navigation() {
             Stream
           </Button>
           <Button
-            color="inherit"
+            sx={{ color: 'white' }}
             component={Link}
             href="/about"
             startIcon={<Info />}
