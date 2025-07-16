@@ -13,7 +13,7 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLive, setIsLive] = useState(false);
-  const [showCover, setShowCover] = useState(true);
+  const [showCover, setShowCover] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -24,7 +24,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
       // Extract video ID and show YouTube iframe instead
       const videoId = streamUrl.split('/embed/')[1];
       setIsLive(true);
-      setShowCover(false);
       setError(null);
       return;
     }
@@ -32,7 +31,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
     // Check if it's a Twitch embed URL
     if (streamUrl.includes('player.twitch.tv')) {
       setIsLive(true);
-      setShowCover(false);
       setError(null);
       return;
     }
@@ -50,7 +48,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         console.log('Stream manifest loaded successfully');
         setIsLive(true);
-        setShowCover(false);
         setError(null);
       });
 
@@ -59,7 +56,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
         if (data.fatal) {
           setError('Stream unavailable - Check if OBS is streaming');
           setIsLive(false);
-          setShowCover(true);
           
           // Retry loading stream after 5 seconds
           setTimeout(() => {
@@ -76,13 +72,11 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
       video.src = streamUrl;
       video.addEventListener('loadedmetadata', () => {
         setIsLive(true);
-        setShowCover(false);
         setError(null);
       });
       video.addEventListener('error', () => {
         setError('Stream unavailable');
         setIsLive(false);
-        setShowCover(true);
       });
     } else {
       setError('HLS not supported in this browser');
@@ -108,50 +102,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
       )}
       
       <Box sx={{ position: 'relative', paddingBottom: '56.25%', height: 0, width: '100%' }}>
-        {showCover && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              zIndex: 1,
-            }}
-          >
-            <Image
-              src="/stream-cover.jpg"
-              alt="Stream Cover"
-              fill
-              style={{
-                objectFit: 'cover',
-              }}
-              priority
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 32,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                color: 'white',
-                px: 4,
-                py: 2,
-                borderRadius: 2,
-                textAlign: 'center',
-              }}
-            >
-              <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-                Stream Offline
-              </Typography>
-              <Typography variant="body1">
-                The stream will appear here when broadcasting begins
-              </Typography>
-            </Box>
-          </Box>
-        )}
-        
         {streamUrl.includes('youtube.com/embed/') ? (
           <iframe
             src={streamUrl}
@@ -162,7 +112,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
               width: '100%',
               height: '100%',
               border: 'none',
-              display: showCover ? 'none' : 'block',
             }}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -177,7 +126,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
               width: '100%',
               height: '100%',
               border: 'none',
-              display: showCover ? 'none' : 'block',
             }}
             allow="autoplay; fullscreen"
             allowFullScreen
@@ -195,7 +143,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
               width: '100%',
               height: '100%',
               backgroundColor: '#000',
-              display: showCover ? 'none' : 'block',
             }}
           />
         )}
