@@ -29,6 +29,14 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
       return;
     }
 
+    // Check if it's a Twitch embed URL
+    if (streamUrl.includes('twitch.tv/embed/')) {
+      setIsLive(true);
+      setShowCover(false);
+      setError(null);
+      return;
+    }
+
     if (Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: false,
@@ -157,6 +165,21 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
               display: showCover ? 'none' : 'block',
             }}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : streamUrl.includes('twitch.tv/embed/') ? (
+          <iframe
+            src={streamUrl}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              border: 'none',
+              display: showCover ? 'none' : 'block',
+            }}
+            allow="autoplay; fullscreen"
             allowFullScreen
           />
         ) : (
