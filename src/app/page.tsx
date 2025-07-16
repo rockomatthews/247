@@ -7,15 +7,23 @@ import VideoPlayer from '@/components/VideoPlayer';
 import TwitchChat from '@/components/LiveComments';
 
 export default function Home() {
-  const [streamUrl, setStreamUrl] = useState('https://demo-streams.jwplayer.com/bipbop.m3u8');
+  const [streamUrl, setStreamUrl] = useState('');
+  const [isClient, setIsClient] = useState(false);
   const twitchChannel = process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '';
 
   useEffect(() => {
+    setIsClient(true);
     if (twitchChannel) {
       const hostname = window.location.hostname;
       setStreamUrl(`https://player.twitch.tv/?channel=${twitchChannel}&parent=${hostname}`);
+    } else {
+      setStreamUrl('https://demo-streams.jwplayer.com/bipbop.m3u8');
     }
   }, [twitchChannel]);
+
+  if (!isClient) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
