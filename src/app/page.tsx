@@ -1,11 +1,21 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Box, Container } from '@mui/material';
 import Navigation from '@/components/Navigation';
 import VideoPlayer from '@/components/VideoPlayer';
 import TwitchChat from '@/components/LiveComments';
 
 export default function Home() {
-  const streamUrl = process.env.NEXT_PUBLIC_STREAM_URL || 'https://demo-streams.jwplayer.com/bipbop.m3u8';
+  const [streamUrl, setStreamUrl] = useState('https://demo-streams.jwplayer.com/bipbop.m3u8');
   const twitchChannel = process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '';
+
+  useEffect(() => {
+    if (twitchChannel) {
+      const hostname = window.location.hostname;
+      setStreamUrl(`https://player.twitch.tv/?channel=${twitchChannel}&parent=${hostname}`);
+    }
+  }, [twitchChannel]);
 
   return (
     <>

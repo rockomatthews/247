@@ -30,7 +30,7 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
     }
 
     // Check if it's a Twitch embed URL
-    if (streamUrl.includes('twitch.tv/embed/')) {
+    if (streamUrl.includes('player.twitch.tv')) {
       setIsLive(true);
       setShowCover(false);
       setError(null);
@@ -167,7 +167,7 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
-        ) : streamUrl.includes('twitch.tv/embed/') ? (
+        ) : streamUrl.includes('player.twitch.tv') ? (
           <iframe
             src={streamUrl}
             style={{
