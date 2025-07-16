@@ -27,6 +27,31 @@ export default function Home() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            "name": "Projector Bach 24/7 TV - Live Stream",
+            "description": "Watch Projector Bach live 24/7 on Twitch. Continuous live streaming, music, entertainment and more. Never stops, always live!",
+            "thumbnailUrl": "https://projectorbach.vercel.app/og-image.jpg",
+            "uploadDate": new Date().toISOString(),
+            "duration": "PT24H",
+            "embedUrl": `https://player.twitch.tv/?channel=${twitchChannel}`,
+            "publisher": {
+              "@type": "Organization",
+              "name": "Projector Bach 24/7 TV",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://projectorbach.vercel.app/logo.png"
+              }
+            },
+            "isLiveBroadcast": true,
+            "startDate": new Date().toISOString()
+          })
+        }}
+      />
       <Navigation />
       <Box sx={{ width: '100%' }}>
         <VideoPlayer streamUrl={streamUrl} />

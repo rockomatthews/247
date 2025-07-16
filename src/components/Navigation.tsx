@@ -19,7 +19,7 @@ export default function Navigation() {
           }}
         >
           <span style={{ color: '#FFD700' }}>Projector Bach</span>{' '}
-          <span style={{ color: 'white' }}>TV</span>
+          <span style={{ color: 'white' }}>24/7 TV</span>
         </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
