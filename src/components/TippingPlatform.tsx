@@ -8,7 +8,6 @@ import {
   TextField, 
   Card, 
   CardContent,
-  Grid,
   Chip,
   Alert,
   InputAdornment
@@ -16,8 +15,7 @@ import {
 import { 
   CreditCard, 
   CurrencyBitcoin, 
-  Favorite,
-  AttachMoney 
+  Favorite
 } from '@mui/icons-material';
 
 interface TippingPlatformProps {
@@ -87,46 +85,42 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
           <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
             Choose Payment Method
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Button
-                fullWidth
-                variant={paymentMethod === 'stripe' ? 'contained' : 'outlined'}
-                onClick={() => setPaymentMethod('stripe')}
-                startIcon={<CreditCard />}
-                sx={{
-                  py: 2,
-                  backgroundColor: paymentMethod === 'stripe' ? '#FFD700' : 'transparent',
-                  color: paymentMethod === 'stripe' ? 'black' : 'white',
-                  borderColor: '#FFD700',
-                  '&:hover': {
-                    backgroundColor: paymentMethod === 'stripe' ? '#FFC107' : 'rgba(255, 215, 0, 0.1)',
-                  }
-                }}
-              >
-                Card / PayPal
-              </Button>
-            </Grid>
-            <Grid item xs={6}>
-              <Button
-                fullWidth
-                variant={paymentMethod === 'crypto' ? 'contained' : 'outlined'}
-                onClick={() => setPaymentMethod('crypto')}
-                startIcon={<CurrencyBitcoin />}
-                sx={{
-                  py: 2,
-                  backgroundColor: paymentMethod === 'crypto' ? '#FFD700' : 'transparent',
-                  color: paymentMethod === 'crypto' ? 'black' : 'white',
-                  borderColor: '#FFD700',
-                  '&:hover': {
-                    backgroundColor: paymentMethod === 'crypto' ? '#FFC107' : 'rgba(255, 215, 0, 0.1)',
-                  }
-                }}
-              >
-                Cryptocurrency
-              </Button>
-            </Grid>
-          </Grid>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              fullWidth
+              variant={paymentMethod === 'stripe' ? 'contained' : 'outlined'}
+              onClick={() => setPaymentMethod('stripe')}
+              startIcon={<CreditCard />}
+              sx={{
+                py: 2,
+                backgroundColor: paymentMethod === 'stripe' ? '#FFD700' : 'transparent',
+                color: paymentMethod === 'stripe' ? 'black' : 'white',
+                borderColor: '#FFD700',
+                '&:hover': {
+                  backgroundColor: paymentMethod === 'stripe' ? '#FFC107' : 'rgba(255, 215, 0, 0.1)',
+                }
+              }}
+            >
+              Card / PayPal
+            </Button>
+            <Button
+              fullWidth
+              variant={paymentMethod === 'crypto' ? 'contained' : 'outlined'}
+              onClick={() => setPaymentMethod('crypto')}
+              startIcon={<CurrencyBitcoin />}
+              sx={{
+                py: 2,
+                backgroundColor: paymentMethod === 'crypto' ? '#FFD700' : 'transparent',
+                color: paymentMethod === 'crypto' ? 'black' : 'white',
+                borderColor: '#FFD700',
+                '&:hover': {
+                  backgroundColor: paymentMethod === 'crypto' ? '#FFC107' : 'rgba(255, 215, 0, 0.1)',
+                }
+              }}
+            >
+              Cryptocurrency
+            </Button>
+          </Box>
         </Box>
 
         {/* Quick Amount Selection */}

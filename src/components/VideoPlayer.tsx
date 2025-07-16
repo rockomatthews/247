@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Alert } from '@mui/material';
-import Image from 'next/image';
 import Hls from 'hls.js';
 
 interface VideoPlayerProps {
@@ -13,7 +12,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLive, setIsLive] = useState(false);
-  const [showCover, setShowCover] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -21,8 +19,6 @@ export default function VideoPlayer({ streamUrl }: VideoPlayerProps) {
 
     // Check if it's a YouTube embed URL
     if (streamUrl.includes('youtube.com/embed/')) {
-      // Extract video ID and show YouTube iframe instead
-      const videoId = streamUrl.split('/embed/')[1];
       setIsLive(true);
       setError(null);
       return;
