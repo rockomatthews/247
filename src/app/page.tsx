@@ -55,11 +55,19 @@ export default function Home() {
       />
       <Navigation />
       <Box sx={{ width: '100%' }}>
-        <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 2, 
+          p: 2 
+        }}>
           <Box sx={{ flex: 1 }}>
             <VideoPlayer streamUrl={streamUrl} />
           </Box>
-          <Box sx={{ width: '340px' }}>
+          <Box sx={{ 
+            width: { xs: '100%', md: '340px' },
+            order: { xs: 2, md: 1 }
+          }}>
             <TwitchChat channel={twitchChannel} />
           </Box>
         </Box>
