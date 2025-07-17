@@ -16,12 +16,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100),
-      currency: 'usd',
-      automatic_payment_methods: {
-        enabled: true,
-      },
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `Tip for Projector Bach`,
+              description: message || 'Thank you for your support!',
+            },
+            unit_amount: Math.round(amount * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${request.nextUrl.origin}/payment-success?amount=${amount}&message=${encodeURIComponent(message || '')}`,
+      cancel_url: `${request.nextUrl.origin}?payment=cancelled`,
       metadata: {
         tip_message: message || '',
         streamer: 'Projector Bach',
@@ -30,8 +42,8 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      clientSecret: paymentIntent.client_secret,
-      paymentIntentId: paymentIntent.id,
+      sessionId: session.id,
+      url: session.url,
     });
   } catch (error) {
     console.error('Stripe payment error:', error);

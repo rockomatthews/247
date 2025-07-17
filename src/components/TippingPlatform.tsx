@@ -56,34 +56,26 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
         throw new Error('Failed to create payment');
       }
 
-      const { clientSecret } = await response.json();
-      const stripe = await stripePromise;
-
-      if (!stripe) {
-        throw new Error('Stripe failed to load');
-      }
-
-      const result = await stripe.confirmPayment({
-        clientSecret,
-        confirmParams: {
-          return_url: `${window.location.origin}/payment-success`,
-        },
-        redirect: 'if_required',
-      });
-
-      if (result.error) {
-        throw new Error(result.error.message || 'Payment failed');
-      }
-
-      if (result.paymentIntent?.status === 'succeeded') {
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 5000);
-        setTipAmount('');
-        setTipMessage('');
+      const { sessionId, url } = await response.json();
+      
+      if (url) {
+        window.location.href = url;
+      } else {
+        const stripe = await stripePromise;
+        if (!stripe) {
+          throw new Error('Stripe failed to load');
+        }
+        
+        const result = await stripe.redirectToCheckout({
+          sessionId: sessionId,
+        });
+        
+        if (result.error) {
+          throw new Error(result.error.message || 'Payment failed');
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Payment failed');
-    } finally {
       setIsProcessing(false);
     }
   };
