@@ -10,13 +10,17 @@ import {
   CardContent,
   Chip,
   Alert,
-  InputAdornment
+  InputAdornment,
+  CircularProgress
 } from '@mui/material';
 import { 
   CreditCard, 
   CurrencyBitcoin, 
   Favorite
 } from '@mui/icons-material';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface TippingPlatformProps {
   streamerName?: string;
@@ -27,21 +31,100 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
   const [tipMessage, setTipMessage] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'crypto'>('stripe');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const quickAmounts = [5, 10, 25, 50, 100];
 
-  const handleStripePayment = () => {
-    // This would integrate with Stripe's Payment Element
-    console.log('Processing Stripe payment:', { amount: tipAmount, message: tipMessage });
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+  const handleStripePayment = async () => {
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/payments/stripe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: parseFloat(tipAmount),
+          message: tipMessage,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create payment');
+      }
+
+      const { clientSecret } = await response.json();
+      const stripe = await stripePromise;
+
+      if (!stripe) {
+        throw new Error('Stripe failed to load');
+      }
+
+      const result = await stripe.confirmPayment({
+        clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/payment-success`,
+        },
+        redirect: 'if_required',
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message || 'Payment failed');
+      }
+
+      if (result.paymentIntent?.status === 'succeeded') {
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 5000);
+        setTipAmount('');
+        setTipMessage('');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Payment failed');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const handleCryptoPayment = () => {
-    // This would integrate with NOWPayments widget
-    console.log('Processing crypto payment:', { amount: tipAmount, message: tipMessage });
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+  const handleCryptoPayment = async () => {
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/payments/nowpayments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: parseFloat(tipAmount),
+          message: tipMessage,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create crypto payment');
+      }
+
+      const { paymentUrl, paymentAddress, paymentAmount, payCurrency } = await response.json();
+      
+      if (paymentUrl) {
+        window.open(paymentUrl, '_blank');
+      } else {
+        alert(`Please send ${paymentAmount} ${payCurrency.toUpperCase()} to: ${paymentAddress}`);
+      }
+      
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 5000);
+      setTipAmount('');
+      setTipMessage('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Crypto payment failed');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -77,6 +160,16 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
             sx={{ mb: 3, backgroundColor: '#4caf50', color: 'white' }}
           >
             🎉 Thank you for your tip! Your support means everything!
+          </Alert>
+        )}
+
+        {error && (
+          <Alert 
+            severity="error" 
+            sx={{ mb: 3, backgroundColor: '#f44336', color: 'white' }}
+            onClose={() => setError(null)}
+          >
+            {error}
           </Alert>
         )}
 
@@ -219,7 +312,7 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
           variant="contained"
           size="large"
           onClick={paymentMethod === 'stripe' ? handleStripePayment : handleCryptoPayment}
-          disabled={!tipAmount || parseFloat(tipAmount) <= 0}
+          disabled={!tipAmount || parseFloat(tipAmount) <= 0 || isProcessing}
           sx={{
             py: 2,
             fontSize: '1.2rem',
@@ -234,11 +327,13 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
               color: 'rgba(0, 0, 0, 0.5)',
             }
           }}
-          startIcon={paymentMethod === 'stripe' ? <CreditCard /> : <CurrencyBitcoin />}
+          startIcon={isProcessing ? <CircularProgress size={20} /> : (paymentMethod === 'stripe' ? <CreditCard /> : <CurrencyBitcoin />)}
         >
-          {paymentMethod === 'stripe' 
-            ? `Tip $${tipAmount || '0'} with Card/PayPal` 
-            : `Tip $${tipAmount || '0'} with Crypto`
+          {isProcessing 
+            ? 'Processing...' 
+            : paymentMethod === 'stripe' 
+              ? `Tip $${tipAmount || '0'} with Card/PayPal` 
+              : `Tip $${tipAmount || '0'} with Crypto`
           }
         </Button>
 
