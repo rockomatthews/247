@@ -20,7 +20,6 @@ import {
   Tooltip,
   Snackbar
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 import { 
   Close,
   ContentCopy,
@@ -364,28 +363,24 @@ export default function CryptoPaymentModal({
                 </Box>
               </Paper>
 
-              <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid xs={6}>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                      Network
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: 'white', fontWeight: 'bold' }}>
-                      {paymentData.network || paymentData.payCurrency.toUpperCase()}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid xs={6}>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                      Order ID
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: 'white', fontWeight: 'bold' }}>
-                      {paymentData.orderId}
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
+              <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                <Box sx={{ textAlign: 'center', flex: 1 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                    Network
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'white', fontWeight: 'bold' }}>
+                    {paymentData.network || paymentData.payCurrency.toUpperCase()}
+                  </Typography>
+                </Box>
+                <Box sx={{ textAlign: 'center', flex: 1 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                    Order ID
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'white', fontWeight: 'bold' }}>
+                    {paymentData.orderId}
+                  </Typography>
+                </Box>
+              </Box>
 
               {paymentData.paymentUrl && (
                 <Button
