@@ -19,6 +19,7 @@ import {
   Favorite
 } from '@mui/icons-material';
 import { loadStripe } from '@stripe/stripe-js';
+import CryptoPaymentModal from './CryptoPaymentModal';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -33,6 +34,7 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
   const [showSuccess, setShowSuccess] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCryptoModal, setShowCryptoModal] = useState(false);
 
   const quickAmounts = [5, 10, 25, 50, 100];
 
@@ -80,90 +82,64 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
     }
   };
 
-  const handleCryptoPayment = async () => {
-    setIsProcessing(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('/api/payments/nowpayments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: parseFloat(tipAmount),
-          message: tipMessage,
-        }),
-      });
+  const handleCryptoPayment = () => {
+    setShowCryptoModal(true);
+  };
 
-      if (!response.ok) {
-        throw new Error('Failed to create crypto payment');
-      }
-
-      const { paymentUrl, paymentAddress, paymentAmount, payCurrency } = await response.json();
-      
-      if (paymentUrl) {
-        window.open(paymentUrl, '_blank');
-      } else {
-        alert(`Please send ${paymentAmount} ${payCurrency.toUpperCase()} to: ${paymentAddress}`);
-      }
-      
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 5000);
-      setTipAmount('');
-      setTipMessage('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Crypto payment failed');
-    } finally {
-      setIsProcessing(false);
-    }
+  const handleCryptoSuccess = () => {
+    setShowCryptoModal(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 5000);
+    setTipAmount('');
+    setTipMessage('');
   };
 
   return (
-    <Card sx={{ 
-      maxWidth: 600, 
-      mx: 'auto', 
-      background: 'linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%)',
-      border: '2px solid #FFD700',
-      borderRadius: 3
-    }}>
-      <CardContent sx={{ p: 4 }}>
-        <Box sx={{ textAlign: 'center', mb: 3 }}>
-          <Typography 
-            variant="h4" 
-            sx={{ 
-              fontFamily: '"Act of Rejection", sans-serif',
-              color: '#FFD700',
-              mb: 1,
-              fontWeight: 'bold'
-            }}
-          >
-            <Favorite sx={{ mr: 1, verticalAlign: 'middle' }} />
-            Tip {streamerName}
-          </Typography>
-          <Typography variant="body1" sx={{ color: 'white', opacity: 0.8 }}>
-            Show your support for the 24/7 stream!
-          </Typography>
-        </Box>
+    <>
+      <Card sx={{ 
+        maxWidth: 600, 
+        mx: 'auto', 
+        background: 'linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%)',
+        border: '2px solid #FFD700',
+        borderRadius: 3
+      }}>
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                fontFamily: '"Act of Rejection", sans-serif',
+                color: '#FFD700',
+                mb: 1,
+                fontWeight: 'bold'
+              }}
+            >
+              <Favorite sx={{ mr: 1, verticalAlign: 'middle' }} />
+              Tip {streamerName}
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'white', opacity: 0.8 }}>
+              Show your support for the 24/7 stream!
+            </Typography>
+          </Box>
 
-        {showSuccess && (
-          <Alert 
-            severity="success" 
-            sx={{ mb: 3, backgroundColor: '#4caf50', color: 'white' }}
-          >
-            🎉 Thank you for your tip! Your support means everything!
-          </Alert>
-        )}
+          {showSuccess && (
+            <Alert 
+              severity="success" 
+              sx={{ mb: 3, backgroundColor: '#4caf50', color: 'white' }}
+            >
+              🎉 Thank you for your tip! Your support means everything!
+            </Alert>
+          )}
 
-        {error && (
-          <Alert 
-            severity="error" 
-            sx={{ mb: 3, backgroundColor: '#f44336', color: 'white' }}
-            onClose={() => setError(null)}
-          >
-            {error}
-          </Alert>
-        )}
+          {error && (
+            <Alert 
+              severity="error" 
+              sx={{ mb: 3, backgroundColor: '#f44336', color: 'white' }}
+              onClose={() => setError(null)}
+            >
+              {error}
+            </Alert>
+          )}
 
         {/* Payment Method Selection */}
         <Box sx={{ mb: 3 }}>
@@ -337,8 +313,17 @@ export default function TippingPlatform({ streamerName = "Projector Bach" }: Tip
               : '₿ Supports 300+ cryptocurrencies including Bitcoin, Ethereum, USDT'
             }
           </Typography>
-        </Box>
-      </CardContent>
-    </Card>
+          </Box>
+        </CardContent>
+      </Card>
+
+      <CryptoPaymentModal
+        open={showCryptoModal}
+        onClose={() => setShowCryptoModal(false)}
+        amount={tipAmount}
+        message={tipMessage}
+        onSuccess={handleCryptoSuccess}
+      />
+    </>
   );
 }
