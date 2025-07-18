@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Providers from './providers';
+import BuyMeCoffeeButton from '../components/BuyMeCoffeeButton';
 
 export const metadata: Metadata = {
   title: "Projector Bach 24/7 TV - Live Streaming 24/7",
@@ -61,6 +62,7 @@ export default function RootLayout({
       <body>
         <Providers>
           {children}
+          <BuyMeCoffeeButton />
         </Providers>
       </body>
     </html>
